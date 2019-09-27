@@ -1,13 +1,20 @@
 #include "FBullCowGame.h"
 
+using FString = std::string;
+using int32 = int;
+
 FBullCowGame::FBullCowGame() { Reset(); }
-int FBullCowGame::GetMaxTries() const { return MyMaxTries; }
-int FBullCowGame::GetCurrentTry() const { return MyCurrentTry; }
+int32 FBullCowGame::GetMaxTries() const { return MyMaxTries; }
+int32 FBullCowGame::GetCurrentTry() const { return MyCurrentTry; }
+int32 FBullCowGame::GetHiddenWordLength() const { return MyHiddenWord.length(); }
 
 void FBullCowGame::Reset()
 {
-	constexpr int MAX_TRIES = 8;
+	constexpr int32 MAX_TRIES = 8;
+	const FString HIDDEN_WORD = "planet";
+
 	MyMaxTries = MAX_TRIES;
+	MyHiddenWord = HIDDEN_WORD;
 	MyCurrentTry = 1;
 	return;
 }
@@ -17,10 +24,41 @@ bool FBullCowGame::IsGameWon() const
 	return false;
 }
 
-bool FBullCowGame::CheckGuessValidity(std::string)
+bool FBullCowGame::CheckGuessValidity(FString) const
 {
 	return false;
 }
 
+// receives a valid guess, increments turn, and returns count 
+FBullCowCount FBullCowGame::SubmitGuess(FString Guess)
+{
+	// increment the turn number
+	MyCurrentTry++;
 
-// provide a method for counting bulls and cows, and increasing try number
+	// setup a return variable
+	FBullCowCount BullCowCount;
+	int32 GuessWordLength = Guess.length();
+	int32 HiddenWordLength = MyHiddenWord.length();
+	// loop through all letters in guess
+	for (int32 GChar = 0; GChar < GuessWordLength; GChar++)
+	{
+		for (int32 MHWChar = 0; MHWChar < HiddenWordLength; MHWChar++)
+		{
+			if (Guess[GChar] == MyHiddenWord[MHWChar])
+			{
+				if (GChar == MHWChar)
+				{
+					BullCowCount.Bulls++;
+				}
+				else
+				{
+					BullCowCount.Cows++;
+				}
+			}
+		}
+	}
+
+	return BullCowCount;
+}
+
+
