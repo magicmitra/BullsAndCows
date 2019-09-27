@@ -21,3 +21,6 @@ bool FBullCowGame::CheckGuessValidity(std::string)
 {
 	return false;
 }
+
+
+// provide a method for counting bulls and cows, and increasing try number
