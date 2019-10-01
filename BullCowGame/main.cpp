@@ -3,21 +3,24 @@
    user interaction. For game logic, see the FBullCowGame Class.
  */
 
+#pragma once
 #include <iostream>
 #include <string>
 #include "FBullCowGame.h"
 
+// make syntax Unreal Engine friendly
 using FText = std::string;
 using int32 = int;
 
+// function prototypes as outside a class 
 void PrintIntro();
 void PlayGame();
 FText GetValidGuess();
 bool AskToPlayAgain();
+void PrintGameSummary();
 
-FBullCowGame BCGame;
+FBullCowGame BCGame; // instantiate new game, reused across plays
 
-// the entry point for the application
 int main()
 {	
 	bool bPlayAgain = false;
@@ -30,7 +33,6 @@ int main()
 	return 0;
 }
 
-// print the intro
 void PrintIntro()
 {
 	std::cout << "Welcome to Bulls and Cows.\n";
@@ -40,12 +42,12 @@ void PrintIntro()
 	return;
 }
 
+// plays a single game into completion
 void PlayGame()
 {
 	BCGame.Reset();
 	int32 MaxTries = BCGame.GetMaxTries();
-	// loop asking for guesses while game is NOT won
-	// and there are still tries remaining
+	// loop asking for guesses while game is NOT won and there are still tries remaining
 	while (!BCGame.IsGameWon() && BCGame.GetCurrentTry() <= MaxTries)
 	{
 		FText Guess = GetValidGuess(); 
@@ -57,7 +59,7 @@ void PlayGame()
 		std::cout << ". Cows = " << BullCowCount.Cows << "\n\n";
 	}
 	
-	// TODO: summarize game
+	PrintGameSummary();
 
 	return;
 }
@@ -70,26 +72,26 @@ FText GetValidGuess()
 	do
 	{
 		int32 CurrentTry = BCGame.GetCurrentTry();
-		std::cout << "Try " << CurrentTry << ". Enter your guess: ";
+		std::cout << "Try " << CurrentTry << " of " << BCGame.GetMaxTries();
+		std::cout << ". Enter your guess: ";
 		std::getline(std::cin, Guess);
 
 		Status = BCGame.CheckGuessValidity(Guess); // set status again
 		switch (Status)
 		{
 		case EGuessStatus::Wrong_Length:
-			std::cout << "Enter a " << BCGame.GetHiddenWordLength() << " letter word.\n";
+			std::cout << "Enter a " << BCGame.GetHiddenWordLength() << " letter word.\n\n";
 			break;
 		case EGuessStatus::Not_Isogram:
-			std::cout << Guess << " is not an isogram. Enter an isogram.\n";
+			std::cout << Guess << " is not an isogram. Enter an isogram.\n\n";
 			break;
 		case EGuessStatus::Not_Lowecase:
-			std::cout << "Lowecase letters only.\n";
+			std::cout << "Lowercase letters only.\n\n";
 			break;
 		default:
 			// assuming the guess is valid
 			break;
 		}
-		std::cout << std::endl;
 	} while (Status != EGuessStatus::OK);
 	return Guess;
 }
@@ -101,4 +103,18 @@ bool AskToPlayAgain()
 	std::getline(std::cin, Response);
 
 	return (Response[0] == 'y') || (Response[0] == 'Y');
+}
+
+void PrintGameSummary()
+{
+	FText Summary = "";
+	if (BCGame.IsGameWon())
+	{
+		std::cout << "You win.\n";
+	}
+	else
+	{
+		std::cout << "You lose.\n";
+	}
+	return;
 }
