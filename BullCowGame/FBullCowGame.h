@@ -1,6 +1,10 @@
+/* The game logic (no view code or direct user interaction).
+   Based on the word game Mastermind.
+ */
 #pragma once
 #include <string>
 
+// make syntax Unreal Engine friendly
 using FString = std::string;
 using int32 = int;
 
@@ -24,7 +28,7 @@ enum class EGuessStatus
 class FBullCowGame
 {
 public:
-	FBullCowGame();
+	FBullCowGame();	// constructor
 	int32 GetMaxTries() const;
 	int32 GetCurrentTry() const;
 	int32 GetHiddenWordLength() const;
@@ -32,13 +36,15 @@ public:
 
 	EGuessStatus CheckGuessValidity(FString) const;
 
-	void Reset(); // TODO: make a more rich return value
+	void Reset();
 	FBullCowCount SubmitValidGuess(FString);
 private:
 
 	// see constructor for initialization
 	int32 MyCurrentTry;
-	int32 MyMaxTries;
 	FString MyHiddenWord;
 	bool bGameIsWon;
+
+	bool bIsIsogram(FString) const;
+	bool bIsLowerCase(FString) const;
 };
